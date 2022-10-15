@@ -1,5 +1,8 @@
 import 'package:chats_manager/util/web_platform.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+
+import '../widgets/chat_page.dart';
 
 class MainScreen extends StatefulWidget {
   static const routeName = '/';
@@ -24,15 +27,17 @@ class _MainScreenState extends State<MainScreen> {
       ],
     );
 
+    const chatPage = ChatPage();
+
     return Scaffold(
       body: isMobilish
           ? chatList
           : Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(width: 380, child: chatList),
-                Expanded(
-                  child: Container(color: Colors.blue),
+                SizedBox(width: 360, child: chatList),
+                const Expanded(
+                  child: chatPage,
                 ),
               ],
             ),
