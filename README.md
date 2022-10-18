@@ -1,6 +1,10 @@
 # chats_manager
 
-A new Flutter project.
+Only works on web for now (not mobile or other platforms).
+
+## Notes:
+
+- Don't forget to run `flutterfire configure` to setup firebase for your project. You also need to follow the instructions for each of the firebase libreries used here (check the pubspec.yaml file).
 
 ## Getting Started
 

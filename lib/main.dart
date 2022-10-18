@@ -1,8 +1,21 @@
 import 'package:chats_manager/screens/main_screen.dart';
+import 'package:chats_manager/screens/testing_screen.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // creating the instance
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   runApp(const MyApp());
 }
 
@@ -31,6 +44,7 @@ class MyApp extends StatelessWidget {
       ],
       routes: <String, WidgetBuilder>{
         MainScreen.routeName: (context) => const MainScreen(),
+        TestingScreen.routeName: (context) => const TestingScreen(),
       },
       initialRoute: MainScreen.routeName,
     );
