@@ -26,16 +26,7 @@ class _MainScreenState extends State<MainScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
-          child: UsersWidget(
-              key: Key(_selectedUser?.id ?? ""),
-              userSelected: _selectedUser,
-              botIdSelected: _selectedBotId,
-              onUserSelected: (user, botIdx) {
-                setState(() {
-                  _selectedUser = user;
-                  _selectedBotId = botIdx;
-                });
-              }),
+          child: UsersWidget(onUserSelected: onUserSelected),
         ),
       ],
     );
@@ -43,23 +34,40 @@ class _MainScreenState extends State<MainScreen> {
     final chat = _selectedUser == null
         ? Container()
         : ChatWidget(
-            key: Key((_selectedUser?.id ?? '') + (_selectedBotId?.toString() ?? '')),
+            key: Key(
+                (_selectedUser?.id ?? '') + (_selectedBotId?.toString() ?? '')),
             user: _selectedUser!,
             botId: _selectedBotId!,
           );
 
-    return Scaffold(
-      body: isMobilish
-          ? chatList
-          : Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(width: 360, child: chatList),
-                Expanded(
-                  child: chat,
-                ),
-              ],
-            ),
+    return WillPopScope(
+      onWillPop: () async {
+        setState(() {
+          _selectedUser = null;
+          _selectedBotId = null;
+        });
+        return false;
+      },
+      child: Scaffold(
+        body: isMobilish
+            ? (_selectedUser != null ? chat : chatList)
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(width: 360, child: chatList),
+                  Expanded(
+                    child: chat,
+                  ),
+                ],
+              ),
+      ),
     );
+  }
+
+  onUserSelected(user, botIdx) {
+    setState(() {
+      _selectedUser = user;
+      _selectedBotId = botIdx;
+    });
   }
 }

@@ -5,20 +5,25 @@ import 'package:chats_manager/models/users.dart' as types;
 import '../firestore/messaging_backend.dart';
 import '../utils/user_ui_util.dart';
 
-class UsersWidget extends StatelessWidget {
+class UsersWidget extends StatefulWidget {
   final Function(types.User, String) onUserSelected;
-  final types.User? userSelected;
-  final String? botIdSelected;
 
-  const UsersWidget(
-      {super.key,
-      required this.onUserSelected,
-      required this.userSelected,
-      required this.botIdSelected});
+  const UsersWidget({super.key, required this.onUserSelected});
+
+  @override
+  State<UsersWidget> createState() => _UsersWidgetState();
+}
+
+class _UsersWidgetState extends State<UsersWidget> {
+  types.User? userSelected;
+  String? botIdSelected;
+
+  final Stream<List<types.User>> _stream =
+      MessagingBackend.instance.users().asBroadcastStream();
 
   @override
   Widget build(BuildContext context) => StreamBuilder<List<types.User>>(
-        stream: MessagingBackend.instance.users(),
+        stream: _stream,
         initialData: const [],
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -44,7 +49,11 @@ class UsersWidget extends StatelessWidget {
 
               return GestureDetector(
                 onTap: () {
-                  onUserSelected(user, botId);
+                  setState(() {
+                    userSelected = user;
+                    botIdSelected = botId;
+                  });
+                  widget.onUserSelected(user, botId);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
