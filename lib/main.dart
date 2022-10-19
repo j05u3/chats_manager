@@ -1,9 +1,9 @@
 import 'package:chats_manager/screens/main_screen.dart';
 import 'package:chats_manager/screens/testing_screen.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:oktoast/oktoast.dart';
 
 import 'firebase_options.dart';
 
@@ -13,10 +13,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // creating the instance
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-
-  runApp(const MyApp());
+  runApp(const OKToast(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

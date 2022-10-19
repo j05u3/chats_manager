@@ -4,17 +4,20 @@ Only works on web for now (not mobile or other platforms).
 
 ## Notes:
 
-- Don't forget to run `flutterfire configure` to setup firebase for your project. You also need to follow the instructions for each of the firebase libreries used here (check the pubspec.yaml file).
+- Don't forget to run `flutterfire configure` and `firebase init` to setup firebase for your project. You also need to follow the instructions for each of the firebase libreries used here (check the pubspec.yaml file).
+- Setup hosting: build folder for web is `build/web`.
 
-## Getting Started
+## Deployment:
 
-This project is a starting point for a Flutter application.
+Using CMD on windows you can run the following command (&& is used to run the next command only if the previous one was successful):
 
-A few resources to get you started if this is your first Flutter project:
+```
+flutter build web --release && firebase deploy --only hosting && time /t
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Acknowledgements
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- https://javiercbk.github.io/json_to_dart/: For generating the models from json.
+- https://github.com/flyerhq/flutter_chat_ui: For the chat UI and some examples used in here.
+- https://github.com/flyerhq/flutter_firebase_chat_core: For some code snippets and ideas.
+

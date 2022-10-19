@@ -40,13 +40,14 @@ dependencies:
   flutter_chat_ui: ^1.6.5
   flutter_chat_types: ^3.5.0
   intl: ^0.17.0
-  uuid: ^3.0.6
 
   # firebase
   firebase_core: ^1.24.0
   firebase_analytics: ^9.3.8
   firebase_auth: ^3.11.2
   cloud_firestore: ^3.5.1
+  oktoast: ^3.3.1
+  async: ^2.9.0
 
 dev_dependencies:
   flutter_test:

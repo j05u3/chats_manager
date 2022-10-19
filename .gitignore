@@ -42,3 +42,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# firebase config
+.firebaserc
+firebase.json
+
+# firebase hosting
+.firebase/hosting*

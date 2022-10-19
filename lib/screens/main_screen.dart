@@ -1,8 +1,9 @@
-import 'package:chats_manager/util/web_platform.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:chats_manager/models/users.dart';
+import 'package:chats_manager/utils/web_platform.dart';
+import 'package:chats_manager/widgets/users_widget.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/chat_page.dart';
+import '../widgets/chat_widget.dart';
 
 class MainScreen extends StatefulWidget {
   static const routeName = '/';
@@ -14,6 +15,9 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  User? _selectedUser;
+  String? _selectedBotId;
+
   @override
   Widget build(BuildContext context) {
     final isMobilish = WebPlatform.isMobilish(context);
@@ -22,12 +26,27 @@ class _MainScreenState extends State<MainScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
-          child: Container(color: Colors.amber),
+          child: UsersWidget(
+              key: Key(_selectedUser?.id ?? ""),
+              userSelected: _selectedUser,
+              botIdSelected: _selectedBotId,
+              onUserSelected: (user, botIdx) {
+                setState(() {
+                  _selectedUser = user;
+                  _selectedBotId = botIdx;
+                });
+              }),
         ),
       ],
     );
 
-    const chatPage = ChatPage();
+    final chat = _selectedUser == null
+        ? Container()
+        : ChatWidget(
+            key: Key((_selectedUser?.id ?? '') + (_selectedBotId?.toString() ?? '')),
+            user: _selectedUser!,
+            botId: _selectedBotId!,
+          );
 
     return Scaffold(
       body: isMobilish
@@ -36,8 +55,8 @@ class _MainScreenState extends State<MainScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(width: 360, child: chatList),
-                const Expanded(
-                  child: chatPage,
+                Expanded(
+                  child: chat,
                 ),
               ],
             ),
