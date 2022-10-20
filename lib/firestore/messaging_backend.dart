@@ -1,8 +1,8 @@
-import 'package:async/async.dart';
 import 'package:chats_manager/models/messages.dart';
 import 'package:chats_manager/models/users.dart' as types;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 /// Provides access to Firebase chat data. Singleton, use
 /// MessagingBackend.instance to aceess methods.
@@ -87,20 +87,17 @@ class MessagingBackend {
   }
 
   Stream<List<Message>> messages(String userId) {
-    return StreamZip([
-      incomingMessages(userId),
-      outgoingMessages(userId),
-    ]).map((event) {
-      final incoming = (event[0] as List<IncomingMessage>)
-          .map((e) => Message(id: e.id!, t: e.t!, incomingMessage: e));
-      final outgoing = (event[1] as List<OutgoingMessage>).map((e) => Message(
-          id: e.responseSummary!.messageId!, t: e.t!, outgoingMessage: e));
-      final messages = [
-        ...incoming,
-        ...outgoing,
-      ];
+    return incomingMessages(userId).combineLatest(outgoingMessages(userId),
+        (incomingMessages, outgoingMessages) {
+      final messages = <Message>[];
+      messages.addAll(incomingMessages
+          .map((e) => Message(id: e.id!, t: e.t!, incomingMessage: e)));
+      messages.addAll(outgoingMessages.map((e) => Message(
+          id: e.responseSummary!.messageId!, t: e.t!, outgoingMessage: e)));
+
       // sort by timestamp in descending order
-      messages.sort((a, b) => b.t!.compareTo(a.t!));      
+      messages.sort((a, b) => b.t!.compareTo(a.t!));
+
       return messages;
     });
   }
