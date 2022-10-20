@@ -6,16 +6,22 @@ User convertUserToChatUser(types.User user) {
   return User(
     id: user.id,
     lastSeen: user.status.lastIncomingMessageTimestamp,
+    firstName: user.profile.name,
   );
 }
 
 TextMessage convertMessageToChatMessage(msgTypes.Message message) {
+  final isIncoming = message.incomingMessage != null;
   final senderId = message.incomingMessage?.from ??
       message.outgoingMessage?.fromPhoneNumberId ??
       "";
+  final senderName = (isIncoming
+          ? (message.incomingMessage?.name ?? message.incomingMessage?.from)
+          : message.outgoingMessage?.fromPhoneNumberId) ??
+      "";
   return TextMessage.fromPartial(
     createdAt: message.t,
-    author: User(firstName: senderId, id: senderId),
+    author: User(firstName: senderName, id: senderId),
     id: message.id,
     partialText: PartialText(
         text: (message.incomingMessage?.data?.text ??

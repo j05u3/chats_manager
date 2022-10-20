@@ -20,4 +20,4 @@ Color getUserAvatarNameColor(types.User user) {
 }
 
 String getUserName(types.User user) =>
-    '${user.id} ${user.profile?.name ?? ''}'.trim();
+    "${user.profile.name ?? ''} (${user.id})".trim();

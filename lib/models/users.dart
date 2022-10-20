@@ -58,7 +58,7 @@ class UserMessagingProfile {
 class User {
   String id;
   UserMessageStatus status;
-  UserMessagingProfile? profile; // not used for now
+  UserMessagingProfile profile;
 
-  User({required this.id, required this.status, this.profile});
+  User({required this.id, required this.status, required this.profile});
 }

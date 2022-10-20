@@ -1,8 +1,10 @@
 import 'package:chats_manager/private_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:chats_manager/models/users.dart' as types;
+import 'package:flutter/services.dart';
 
 import '../firestore/messaging_backend.dart';
+import '../utils/toast_util.dart';
 import '../utils/user_ui_util.dart';
 
 class UsersWidget extends StatefulWidget {
@@ -39,13 +41,20 @@ class _UsersWidgetState extends State<UsersWidget> {
             );
           }
 
+          final users = snapshot.data!;
+
           return ListView.builder(
-            itemCount: snapshot.data!.length * bot_phone_number_ids.length,
+            itemCount: users.length * bot_phone_number_ids.length,
             itemBuilder: (context, _idx) {
               final index = _idx ~/ bot_phone_number_ids.length;
               final botIdx = _idx % bot_phone_number_ids.length;
               final botId = bot_phone_number_ids.entries.toList()[botIdx].key;
-              final user = snapshot.data![index];
+              final user = users[index];
+
+              copyPhoneNumber() {
+                Clipboard.setData(ClipboardData(text: user.id));
+                toast("User phone number copied to clipboard ✌️");
+              }
 
               return GestureDetector(
                 onTap: () {
@@ -55,6 +64,8 @@ class _UsersWidgetState extends State<UsersWidget> {
                   });
                   widget.onUserSelected(user, botId);
                 },
+                onLongPress: copyPhoneNumber,
+                onSecondaryTap: copyPhoneNumber,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -63,13 +74,15 @@ class _UsersWidgetState extends State<UsersWidget> {
                   color: user.id == userSelected?.id && botId == botIdSelected
                       ? const Color.fromARGB(120, 255, 126, 126)
                       : Colors.transparent,
-                  child: Row(
-                    children: [
-                      _buildAvatar(user),
-                      Text(getUserName(user) +
-                          " " +
-                          (bot_phone_number_ids[botId] ?? "")),
-                    ],
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildAvatar(user),
+                        Text(
+                            "[${(bot_phone_number_ids[botId] ?? "")}] ${getUserName(user)}"),
+                      ],
+                    ),
                   ),
                 ),
               );

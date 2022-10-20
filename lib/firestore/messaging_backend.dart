@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:chats_manager/models/messages.dart';
 import 'package:chats_manager/models/users.dart' as types;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,9 +20,11 @@ class MessagingBackend {
   /// Gets proper [FirebaseFirestore] instance.
   FirebaseFirestore get firestore => FirebaseFirestore.instance;
 
-  /// Gets the users message status collection.
   CollectionReference get userMessageStatusCollection =>
       firestore.collection("user_message_status");
+
+  CollectionReference get userMessagingProfileCollection =>
+      firestore.collection("user_messaging_profile");
 
   CollectionReference get incomingMessagesCollection =>
       firestore.collection("incoming_messages");
@@ -30,24 +33,24 @@ class MessagingBackend {
       firestore.collection("outgoing_messages");
 
   Stream<List<types.User>> users() {
-    // if (firebaseUser == null) return const Stream.empty();
     return userMessageStatusCollection
         .orderBy("last_message_timestamp", descending: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.fold<List<types.User>>(
-            [],
-            (previousValue, doc) {
-              return [
-                ...previousValue,
-                types.User(
-                    id: doc.id,
-                    status: types.UserMessageStatus.fromJson(
-                        doc.data() as Map<String, dynamic>))
-              ];
-            },
-          ),
-        );
+        .combineLatest(userMessagingProfileCollection.snapshots(),
+            (statusesSnapshot, profilesSnapshot) {
+      return statusesSnapshot.docs.map((status) {
+        final profile = profilesSnapshot.docs
+            .firstWhereOrNull((profile) => profile.id == status.id);
+        return types.User(
+            id: status.id,
+            profile: profile == null
+                ? (types.UserMessagingProfile()..name = "")
+                : types.UserMessagingProfile.fromJson(
+                    profile.data() as Map<String, dynamic>),
+            status: types.UserMessageStatus.fromJson(
+                status.data() as Map<String, dynamic>));
+      }).toList();
+    });
   }
 
   Stream<List<IncomingMessage>> incomingMessages(String userId) {

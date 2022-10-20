@@ -1,5 +1,6 @@
 import 'package:chats_manager/firestore/messaging_backend.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:chats_manager/models/messages.dart' as msgTypes;
 
@@ -53,7 +54,8 @@ class _ChatWidgetState extends State<ChatWidget> {
   }
 
   void _handleMessageTap(BuildContext context, types.Message p1) {
-    toast("Not implemented yet");
+    Clipboard.setData(ClipboardData(text: p1.author.id));
+    toast("User phone number copied to clipboard ✌️");
   }
 
   void _handleAtachmentPressed() {
