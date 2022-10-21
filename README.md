@@ -28,9 +28,25 @@ Display and manage your [Whatsapp Cloud API](https://developers.facebook.com/doc
 flutter build web --release && firebase deploy --only hosting && time /t
 ```
 
+## Notes:
+
+- When changing or using @JsonSerializable (to generate models) run `flutter pub run build_runner build` or `flutter pub run build_runner watch --delete-conflicting-outputs` to start the watcher.
+- If your are hosting your images on Google Storage don't forget to add the CORS configuration to allow the images to be displayed on the web. Example cors json config:
+
+```json
+[
+  {
+    "origin": ["*"],
+    "method": ["GET", "POST", "PUT", "DELETE"],
+    "responseHeader": ["Content-Type"],
+    "maxAgeSeconds": 3600
+  }
+]
+```
+
 ## Acknowledgements
 
 - https://github.com/flyerhq/flutter_chat_ui: For the chat UI and other UI component ideas used in here.
 - https://github.com/flyerhq/flutter_firebase_chat_core: For some code snippets and ideas.
 - https://github.com/tawn33y/whatsapp-cloud-api: For the original Whatsapp Cloud API bot library.
-- https://javiercbk.github.io/json_to_dart/: Used for generating the models from json.
+- https://javiercbk.github.io/json_to_dart/: Used for generating the initial models from json.

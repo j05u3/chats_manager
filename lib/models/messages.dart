@@ -1,3 +1,7 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'messages.g.dart';
+
 class IncomingMessage {
   String? toPhoneNumberId;
   int? t;
@@ -129,6 +133,7 @@ class OutgoingMessage {
   }
 }
 
+@JsonSerializable()
 class RequestBody {
   String? to;
   Text? text;
@@ -138,6 +143,7 @@ class RequestBody {
   String? recipientType;
   String? messagingProduct;
   String? type;
+  Image? image;
 
   RequestBody(
       {this.to,
@@ -147,45 +153,13 @@ class RequestBody {
       this.interactive,
       this.recipientType,
       this.messagingProduct,
-      this.type});
+      this.type,
+      this.image});
+      
+  factory RequestBody.fromJson(Map<String, dynamic> json) =>
+      _$RequestBodyFromJson(json);
 
-  RequestBody.fromJson(Map<String, dynamic> json) {
-    to = json['to'];
-    text = json['text'] != null ? new Text.fromJson(json['text']) : null;
-    recipientType = json['recipient_type'];
-    messagingProduct = json['messaging_product'];
-    type = json['type'];
-    template = json['template'] != null
-        ? new Template.fromJson(json['template'])
-        : null;
-    location = json['location'] != null
-        ? new Location.fromJson(json['location'])
-        : null;
-    interactive = json['interactive'] != null
-        ? new Interactive.fromJson(json['interactive'])
-        : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['to'] = this.to;
-    if (this.text != null) {
-      data['text'] = this.text!.toJson();
-    }
-    data['recipient_type'] = this.recipientType;
-    data['messaging_product'] = this.messagingProduct;
-    data['type'] = this.type;
-    if (this.template != null) {
-      data['template'] = this.template!.toJson();
-    }
-    if (this.location != null) {
-      data['location'] = this.location!.toJson();
-    }
-    if (this.interactive != null) {
-      data['interactive'] = this.interactive!.toJson();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => _$RequestBodyToJson(this);
 }
 
 class Interactive {
@@ -225,20 +199,55 @@ class Location {
   }
 }
 
+@JsonSerializable()
 class Template {
-  String? name;
+  final String name;
+  final List<TemplateComponent>? components;
 
-  Template({this.name});
+  Template({required this.name, this.components});
 
-  Template.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-  }
+  factory Template.fromJson(Map<String, dynamic> json) =>
+      _$TemplateFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    return data;
-  }
+  Map<String, dynamic> toJson() => _$TemplateToJson(this);
+}
+
+@JsonSerializable()
+class TemplateComponent {
+  final String type;
+  final List<Parameter>? parameters;
+
+  TemplateComponent({required this.type, this.parameters});
+
+  factory TemplateComponent.fromJson(Map<String, dynamic> json) =>
+      _$TemplateComponentFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TemplateComponentToJson(this);
+}
+
+@JsonSerializable()
+class Parameter {
+  final String type;
+  final Image? image;
+  final String? text;
+
+  Parameter({required this.type, this.image, this.text});
+
+  factory Parameter.fromJson(Map<String, dynamic> json) =>
+      _$ParameterFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ParameterToJson(this);
+}
+
+@JsonSerializable()
+class Image {
+  final String? link;
+
+  Image({this.link});
+
+  factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ImageToJson(this);
 }
 
 class Text {
