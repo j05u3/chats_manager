@@ -49,6 +49,8 @@ class IncomingMessage {
   }
 }
 
+
+@JsonSerializable()
 class Data {
   String? text;
   Context? context;
@@ -56,28 +58,22 @@ class Data {
   String? title;
   String? payload;
 
-  Data({this.text, this.context, this.id, this.title, this.payload});
+  // location
+  double? latitude;
+  double? longitude;
 
-  Data.fromJson(Map<String, dynamic> json) {
-    text = json['text'];
-    context =
-        json['context'] != null ? new Context.fromJson(json['context']) : null;
-    id = json['id'];
-    title = json['title'];
-    payload = json['payload'];
-  }
+  Data(
+      {this.text,
+      this.context,
+      this.id,
+      this.title,
+      this.payload,
+      this.latitude,
+      this.longitude});
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['text'] = this.text;
-    if (this.context != null) {
-      data['context'] = this.context!.toJson();
-    }
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['payload'] = this.payload;
-    return data;
-  }
+  factory Data.fromJson(Map<String, dynamic> json) => _$DataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DataToJson(this);
 }
 
 class Context {

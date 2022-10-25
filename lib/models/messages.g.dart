@@ -6,6 +6,28 @@ part of 'messages.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+Data _$DataFromJson(Map<String, dynamic> json) => Data(
+      text: json['text'] as String?,
+      context: json['context'] == null
+          ? null
+          : Context.fromJson(json['context'] as Map<String, dynamic>),
+      id: json['id'] as String?,
+      title: json['title'] as String?,
+      payload: json['payload'] as String?,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+    );
+
+Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
+      'text': instance.text,
+      'context': instance.context,
+      'id': instance.id,
+      'title': instance.title,
+      'payload': instance.payload,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+    };
+
 RequestBody _$RequestBodyFromJson(Map<String, dynamic> json) => RequestBody(
       to: json['to'] as String?,
       text: json['text'] == null

@@ -23,6 +23,7 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
 
   final author = User(firstName: senderName, id: senderId);
 
+  // template sent
   if (message.outgoingMessage?.requestBody?.template != null) {
     final template = message.outgoingMessage!.requestBody!.template!;
 
@@ -70,6 +71,7 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
     );
   }
 
+  // image sent
   if (message.outgoingMessage?.requestBody?.image != null) {
     final imageLink = message.outgoingMessage?.requestBody?.image?.link ?? "";
 
@@ -92,8 +94,12 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
     partialText: PartialText(
         text: (message.incomingMessage?.data?.text ??
             message.incomingMessage?.data?.title ??
+            (message.incomingMessage?.data?.latitude != null
+                ? (message.incomingMessage!.data!.latitude!.toString() +
+                    ", " +
+                    message.incomingMessage!.data!.longitude!.toString())
+                : null) ??
             message.outgoingMessage?.requestBody?.text?.body ??
-            message.outgoingMessage?.requestBody?.template?.name ??
             message.outgoingMessage?.requestBody?.interactive?.body?.text ??
             (message.outgoingMessage?.requestBody?.location != null
                 ? message.outgoingMessage!.requestBody!.location!.latitude!
