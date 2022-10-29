@@ -46,6 +46,17 @@ class _ChatWidgetState extends State<ChatWidget> {
           user: types.User(
             id: widget.botId,
           ),
+          imageMessageBuilder: (message, {required messageWidth}) {
+            return Column(
+              children: [
+                ImageMessage(
+                  message: message,
+                  messageWidth: messageWidth,
+                ),
+                if (message.name.isNotEmpty) Text(message.name),
+              ],
+            );
+          },
         );
       });
 
