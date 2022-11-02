@@ -49,6 +49,8 @@ dependencies:
   oktoast: ^3.3.1
   stream_transform: ^2.0.1
   json_annotation: ^4.7.0
+  retrofit: ^3.3.1
+  pretty_dio_logger: ^1.2.0-beta-1
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +64,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   build_runner: ^2.3.2
   json_serializable: ^6.5.3
+  retrofit_generator: ^4.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

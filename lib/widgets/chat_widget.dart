@@ -1,4 +1,6 @@
+import 'package:chats_manager/api/bot_server_api.dart';
 import 'package:chats_manager/firestore/messaging_backend.dart';
+import 'package:chats_manager/models/bot_server_api/messages_api_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -60,8 +62,14 @@ class _ChatWidgetState extends State<ChatWidget> {
         );
       });
 
-  void _handleSendPressed(types.PartialText message) {
-    toast("Not implemented yet");
+  void _handleSendPressed(types.PartialText message) async {
+    await (await BotServerApiClient.getClient()).sendTextMessage(
+      SendMessageRequest(
+        from: widget.botId,
+        to: widget.user.id,
+        msg: message.text,
+      ),
+    );
   }
 
   void _handleMessageTap(BuildContext context, types.Message p1) {

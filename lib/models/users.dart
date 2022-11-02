@@ -56,7 +56,7 @@ class UserMessagingProfile {
 }
 
 class User {
-  String id;
+  String id; // phone number with country code (WhatsApp style)
   UserMessageStatus status;
   UserMessagingProfile profile;
 
