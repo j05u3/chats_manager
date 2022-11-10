@@ -105,6 +105,15 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
         ),
       );
     }
+
+    return TextMessage.fromPartial(
+      createdAt: message.t,
+      author: author,
+      id: message.id,
+      partialText: PartialText(
+        text: "$mime_type\n$media_url",
+      ),
+    );
   }
 
   return TextMessage.fromPartial(
@@ -136,5 +145,5 @@ String buildLocationTextFromLocation(msgTypes.Location location) {
 }
 
 String buildLocationText(String lat, String lon) {
-  return "📍 $lat, $lon (link for easy lookup: https://maps.google.com/?q=$lat,$lon)";
+  return "📍 $lat, $lon \nLink for easy lookup: https://maps.google.com/?q=$lat,$lon";
 }
