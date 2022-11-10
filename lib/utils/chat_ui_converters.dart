@@ -1,3 +1,4 @@
+// ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart'; // for the extension method IterableExtension.firstWhereOrNull
 import 'package:chats_manager/models/users.dart' as types;
 import 'package:chats_manager/models/messages.dart' as msgTypes;
@@ -87,6 +88,25 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
     );
   }
 
+  // media received
+  if (message.incomingMessage?.data?.media_url != null) {
+    final mime_type = message.incomingMessage!.data!.mime_type!;
+    final media_url = message.incomingMessage?.data?.media_url ?? "";
+
+    if (mime_type.startsWith("image")) {
+      return ImageMessage.fromPartial(
+        createdAt: message.t,
+        author: author,
+        id: message.id,
+        partialImage: PartialImage(
+          uri: media_url,
+          name: "",
+          size: 0,
+        ),
+      );
+    }
+  }
+
   return TextMessage.fromPartial(
     createdAt: message.t,
     author: author,
@@ -95,19 +115,26 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
         text: (message.incomingMessage?.data?.text ??
             message.incomingMessage?.data?.title ??
             (message.incomingMessage?.data?.latitude != null
-                ? (message.incomingMessage!.data!.latitude!.toString() +
-                    ", " +
+                ? buildLocationText(
+                    message.incomingMessage!.data!.latitude!.toString(),
                     message.incomingMessage!.data!.longitude!.toString())
                 : null) ??
             message.outgoingMessage?.requestBody?.text?.body ??
             message.outgoingMessage?.requestBody?.interactive?.body?.text ??
             (message.outgoingMessage?.requestBody?.location != null
-                ? message.outgoingMessage!.requestBody!.location!.latitude!
-                        .toString()! +
-                    ", " +
-                    message.outgoingMessage!.requestBody!.location!.longitude!
-                        .toString()!
+                ? buildLocationTextFromLocation(
+                    message.outgoingMessage!.requestBody!.location!)
                 : null) ??
             "")),
   );
+}
+
+String buildLocationTextFromLocation(msgTypes.Location location) {
+  final lat = location.latitude!.toString();
+  final lon = location.longitude!.toString();
+  return buildLocationText(lat, lon);
+}
+
+String buildLocationText(String lat, String lon) {
+  return "📍 $lat, $lon (link for easy lookup: https://maps.google.com/?q=$lat,$lon)";
 }

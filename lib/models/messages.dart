@@ -49,7 +49,6 @@ class IncomingMessage {
   }
 }
 
-
 @JsonSerializable()
 class Data {
   String? text;
@@ -57,6 +56,10 @@ class Data {
   String? id;
   String? title;
   String? payload;
+
+  // media
+  String? media_url;
+  String? mime_type;
 
   // location
   double? latitude;
@@ -69,7 +72,9 @@ class Data {
       this.title,
       this.payload,
       this.latitude,
-      this.longitude});
+      this.longitude,
+      this.media_url,
+      this.mime_type});
 
   factory Data.fromJson(Map<String, dynamic> json) => _$DataFromJson(json);
 
@@ -151,7 +156,7 @@ class RequestBody {
       this.messagingProduct,
       this.type,
       this.image});
-      
+
   factory RequestBody.fromJson(Map<String, dynamic> json) =>
       _$RequestBodyFromJson(json);
 

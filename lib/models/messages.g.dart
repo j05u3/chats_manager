@@ -16,6 +16,8 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
       payload: json['payload'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
+      media_url: json['media_url'] as String?,
+      mime_type: json['mime_type'] as String?,
     );
 
 Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
@@ -24,6 +26,8 @@ Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
       'payload': instance.payload,
+      'media_url': instance.media_url,
+      'mime_type': instance.mime_type,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
     };
