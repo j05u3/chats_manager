@@ -11,8 +11,8 @@ Display and manage your [Whatsapp Cloud API](https://developers.facebook.com/doc
 
 * Add support for showing templates or other types of messages.
 * Be able to send messages to a specific contact.
-* Be able to answer messages.
 * Be able to pause the bot or stop it.
+* Firebase authentication.
 
 ## Development and deployment setup:
 
