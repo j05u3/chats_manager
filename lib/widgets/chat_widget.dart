@@ -73,6 +73,11 @@ class _ChatWidgetState extends State<ChatWidget> {
   }
 
   void _handleMessageTap(BuildContext context, types.Message p1) {
+    if (p1 is types.ImageMessage) {
+      Clipboard.setData(ClipboardData(text: p1.uri.toString()));
+      toast("Image link copied to clipboard ✌️");
+      return;
+    }
     Clipboard.setData(ClipboardData(text: p1.author.id));
     toast("User phone number copied to clipboard ✌️");
   }
