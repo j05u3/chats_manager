@@ -16,7 +16,7 @@ Display and manage your [Whatsapp Cloud API](https://developers.facebook.com/doc
 
 ## Development and deployment setup:
 
-1. Run `flutterfire configure` and `firebase init` to setup firebase for your project. You also need to follow the instructions for each of the firebase libraries used here (check the pubspec.yaml file).
+1. Run `flutterfire configure` and `firebase init` to setup firebase for your project. Choose `build/web` as the public folder. You also need to follow the instructions for each of the firebase libraries used here (check the pubspec.yaml file).
 2. Create and populate the file `lib/private_constants.dart`. You take a look at the example file `lib/private_constants.example.dart`.
 
 ## Deployment:
