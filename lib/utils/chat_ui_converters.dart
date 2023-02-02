@@ -4,6 +4,8 @@ import 'package:chats_manager/models/users.dart' as types;
 import 'package:chats_manager/models/messages.dart' as msgTypes;
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 
+import '../private_constants.dart';
+
 User convertUserToChatUser(types.User user) {
   return User(
     id: user.id,
@@ -46,7 +48,20 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
         .map((e) => e.text!)
         .toList();
 
-    final text = '[${template.name}] ${texts?.join("\n") ?? ""}';
+    // search for the template on the template list
+    final templateName =
+        templates.firstWhereOrNull((element) => element["id"] == template.name);
+
+    final text = templateName == null
+        ? '[${template.name}] ${texts?.join("\n") ?? ""}'
+        : templateName["text"]!.replaceAllMapped(RegExp(r'\{\{(\d+)\}\}'),
+            (match) {
+            final index = int.parse(match.group(1) ?? "0") - 1;
+            if (texts == null) return "";
+            if (texts.length <= index) return "";
+            if (index < 0) return "";
+            return texts[index] ?? "";
+          });
 
     if (image?.image?.link != null) {
       final imageLink = image!.image!.link!;
