@@ -52,16 +52,16 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
     final templateName =
         templates.firstWhereOrNull((element) => element["id"] == template.name);
 
-    final text = templateName == null
-        ? '[${template.name}] ${texts?.join("\n") ?? ""}'
-        : templateName["text"]!.replaceAllMapped(RegExp(r'\{\{(\d+)\}\}'),
-            (match) {
-            final index = int.parse(match.group(1) ?? "0") - 1;
-            if (texts == null) return "";
-            if (texts.length <= index) return "";
-            if (index < 0) return "";
-            return texts[index] ?? "";
-          });
+    final text = '[t] ${templateName == null
+            ? '[${template.name}] ${texts?.join("\n") ?? ""}'
+            : templateName["text"]!.replaceAllMapped(RegExp(r'\{\{(\d+)\}\}'),
+                (match) {
+                final index = int.parse(match.group(1) ?? "0") - 1;
+                if (texts == null) return "";
+                if (texts.length <= index) return "";
+                if (index < 0) return "";
+                return texts[index] ?? "";
+              })}';
 
     if (image?.image?.link != null) {
       final imageLink = image!.image!.link!;
