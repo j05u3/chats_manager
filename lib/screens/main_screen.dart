@@ -1,6 +1,9 @@
+import 'package:chats_manager/auth/firebase_auth_providers.dart';
+import 'package:chats_manager/auth/screens.dart';
 import 'package:chats_manager/models/users.dart';
 import 'package:chats_manager/utils/web_platform.dart';
 import 'package:chats_manager/widgets/users_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 
 import '../widgets/chat_widget.dart';
@@ -25,6 +28,18 @@ class _MainScreenState extends State<MainScreen> {
     final chatList = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        ElevatedButton.icon(
+          onPressed: () async {
+            for (final provider in firebaseOauthProviders) {
+              await provider.logOutProvider();
+            }
+            await auth.FirebaseAuth.instance.signOut();
+            Navigator.of(context).pushNamed(ManagerSignInScreen.routeName);
+          },
+          label: const Text("Sign out"),
+          icon: const Icon(Icons.logout),
+        ),
+        const Divider(),
         Expanded(
           child: UsersWidget(onUserSelected: onUserSelected),
         ),

@@ -1,6 +1,10 @@
+import 'package:chats_manager/auth/firebase_auth_providers.dart';
+import 'package:chats_manager/auth/screens.dart';
 import 'package:chats_manager/screens/main_screen.dart';
 import 'package:chats_manager/screens/testing_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:oktoast/oktoast.dart';
@@ -12,6 +16,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FirebaseUIAuth.configureProviders(firebaseOauthProviders);
 
   runApp(const OKToast(child: MyApp()));
 }
@@ -42,8 +48,11 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         MainScreen.routeName: (context) => const MainScreen(),
         TestingScreen.routeName: (context) => const TestingScreen(),
+        ManagerSignInScreen.routeName: (context) => ManagerSignInScreen(),
       },
-      initialRoute: MainScreen.routeName,
+      initialRoute: FirebaseAuth.instance.currentUser == null
+          ? ManagerSignInScreen.routeName
+          : MainScreen.routeName,
     );
   }
 }

@@ -11,3 +11,5 @@ const templates = <Map<String, String>>[
     "text": "Hola {{1}}. Eres {{2}}.",
   },
 ];
+
+const GOOGLE_SIGN_IN_OAUTH_CLIENT_ID = "something.apps.googleusercontent.com";
