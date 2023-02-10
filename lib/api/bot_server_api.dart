@@ -32,6 +32,6 @@ abstract class BotServerApiClient {
   }
 
   @POST("/api/v1/po/send_text_msg")
-  Future<SendMessageResponse> sendTextMessage(
+  Future<SendMessageResponse> sendMessage(
       @Body() SendMessageRequest sendMessageRequest);
 }

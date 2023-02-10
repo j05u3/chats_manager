@@ -74,7 +74,7 @@ class _ChatWidgetState extends State<ChatWidget> {
       });
 
   void _handleSendPressed(types.PartialText message) async {
-    await (await BotServerApiClient.getClient()).sendTextMessage(
+    await (await BotServerApiClient.getClient()).sendMessage(
       SendMessageRequest(
         from: widget.botId,
         to: widget.user.id,
@@ -144,48 +144,18 @@ class _ChatWidgetState extends State<ChatWidget> {
     if (result != null) {
       _setAttachmentUploading(true);
       try {
-        await _storeFileAndSend(result.files.single.bytes!);
-        _setAttachmentUploading(false);
+        final mimeType = lookupMimeType(result.files.single.name);
+        if (mimeType == null) {
+          throw "File type unknown or unsupported";
+        }
+        await _storeFileAndSend(result.files.single.bytes!, false, mimeType);
+      } catch (e, s) {
+        toast(e.toString());
+        debugPrintStack(stackTrace: s);
       } finally {
         _setAttachmentUploading(false);
       }
     }
-  }
-
-  Future<void> _storeFileAndSend(Uint8List bytes) async {
-    final id = uuid.v4();
-    final reference = FirebaseStorage.instance.ref(id);
-    if (kIsWeb) {
-      // TODO: maybe setup mime/metadata
-      await reference.putData(bytes);
-    } else {
-      throw "Not implemented";
-      // final filePath = result.files.single.path!;
-      // final file = File(filePath);
-      // // final message = types.PartialFile(
-      // //   mimeType: lookupMimeType(filePath),
-      // //   name: name,
-      // //   size: result.files.single.size,
-      // //   // uri: uri,
-      // // );
-
-
-      // // final image = await decodeImageFromList(bytes);
-      // // final message = types.PartialImage(
-      // //   height: image.height.toDouble(),
-      // //   name: name,
-      // //   size: size,
-      // //   uri: uri,
-      // //   width: image.width.toDouble(),
-      // // );
-
-      // await reference.putFile(file);
-    }
-    final uri = await reference.getDownloadURL();
-
-    // TODO: send message
-    debugPrint("TODO: send message: $uri");
-    await Future.delayed(const Duration(seconds: 2));
   }
 
   void _handleImageSelection() async {
@@ -200,12 +170,78 @@ class _ChatWidgetState extends State<ChatWidget> {
       final bytes = await result.readAsBytes();
 
       try {
-        await _storeFileAndSend(bytes);
+        await _storeFileAndSend(bytes, true, result.mimeType!);
         _setAttachmentUploading(false);
+      } catch (e, s) {
+        toast(e.toString());
+        debugPrintStack(stackTrace: s);
       } finally {
         _setAttachmentUploading(false);
       }
     }
+  }
+
+  Future<void> _storeFileAndSend(
+      Uint8List bytes, bool isImage, String mimeType) async {
+    debugPrint("Storing file with mime type $mimeType");
+    final id = uuid.v4();
+    final reference = FirebaseStorage.instance.ref(id);
+
+    // Mime types supported by WhatsApp:
+    // https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media#supported-media-types
+    if (isImage) {
+      if (mimeType != "image/jpeg" && mimeType != "image/png") {
+        throw "Unsupported image type";
+      }
+    } else {
+      // TODO: validate document mime types
+      throw "Not implemented yet";
+    }
+
+    if (kIsWeb) {
+      await reference.putData(bytes, SettableMetadata(contentType: mimeType));
+    } else {
+      throw "Not implemented";
+      // final filePath = result.files.single.path!;
+      // final file = File(filePath);
+      // // final message = types.PartialFile(
+      // //   mimeType: lookupMimeType(filePath),
+      // //   name: name,
+      // //   size: result.files.single.size,
+      // //   // uri: uri,
+      // // );
+
+      // // final image = await decodeImageFromList(bytes);
+      // // final message = types.PartialImage(
+      // //   height: image.height.toDouble(),
+      // //   name: name,
+      // //   size: size,
+      // //   uri: uri,
+      // //   width: image.width.toDouble(),
+      // // );
+
+      // await reference.putFile(file);
+    }
+    final uri = await reference.getDownloadURL();
+
+    debugPrint("send message: $uri");
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    final msgRequest = SendMessageRequest(
+      from: widget.botId,
+      to: widget.user.id,
+    );
+
+    if (isImage) {
+      msgRequest.imageUrl = uri;
+    } else {
+      msgRequest.documentUrl = uri;
+    }
+
+    await (await BotServerApiClient.getClient()).sendMessage(
+      msgRequest,
+    );
   }
 
   void _setAttachmentUploading(bool uploading) {

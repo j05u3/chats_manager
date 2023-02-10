@@ -6,9 +6,16 @@ part 'messages_api_models.g.dart';
 class SendMessageRequest {
   String from;
   String to;
-  String msg;
+  String? msg;
+  String? documentUrl;
+  String? imageUrl;
 
-  SendMessageRequest({required this.to, required this.msg, required this.from});
+  SendMessageRequest(
+      {required this.from,
+      required this.to,
+      this.msg,
+      this.documentUrl,
+      this.imageUrl});
 
   factory SendMessageRequest.fromJson(Map<String, dynamic> json) =>
       _$SendMessageRequestFromJson(json);

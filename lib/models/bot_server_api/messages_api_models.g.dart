@@ -8,9 +8,11 @@ part of 'messages_api_models.dart';
 
 SendMessageRequest _$SendMessageRequestFromJson(Map<String, dynamic> json) =>
     SendMessageRequest(
-      to: json['to'] as String,
-      msg: json['msg'] as String,
       from: json['from'] as String,
+      to: json['to'] as String,
+      msg: json['msg'] as String?,
+      documentUrl: json['documentUrl'] as String?,
+      imageUrl: json['imageUrl'] as String?,
     );
 
 Map<String, dynamic> _$SendMessageRequestToJson(SendMessageRequest instance) =>
@@ -18,6 +20,8 @@ Map<String, dynamic> _$SendMessageRequestToJson(SendMessageRequest instance) =>
       'from': instance.from,
       'to': instance.to,
       'msg': instance.msg,
+      'documentUrl': instance.documentUrl,
+      'imageUrl': instance.imageUrl,
     };
 
 SendMessageResponse _$SendMessageResponseFromJson(Map<String, dynamic> json) =>

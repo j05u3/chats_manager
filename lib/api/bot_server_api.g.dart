@@ -22,7 +22,7 @@ class _BotServerApiClient implements BotServerApiClient {
   String? baseUrl;
 
   @override
-  Future<SendMessageResponse> sendTextMessage(sendMessageRequest) async {
+  Future<SendMessageResponse> sendMessage(sendMessageRequest) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
