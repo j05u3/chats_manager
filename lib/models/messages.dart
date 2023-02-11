@@ -145,6 +145,7 @@ class RequestBody {
   String? messagingProduct;
   String? type;
   Image? image;
+  Document? document;
 
   RequestBody(
       {this.to,
@@ -249,6 +250,20 @@ class Image {
   factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
 
   Map<String, dynamic> toJson() => _$ImageToJson(this);
+}
+
+@JsonSerializable()
+class Document {
+  final String? link;
+  final String? filename;
+  final String? caption;
+
+  Document({this.link, this.filename, this.caption});
+
+  factory Document.fromJson(Map<String, dynamic> json) =>
+      _$DocumentFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DocumentToJson(this);
 }
 
 class Text {

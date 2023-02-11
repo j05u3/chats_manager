@@ -52,7 +52,9 @@ RequestBody _$RequestBodyFromJson(Map<String, dynamic> json) => RequestBody(
       image: json['image'] == null
           ? null
           : Image.fromJson(json['image'] as Map<String, dynamic>),
-    );
+    )..document = json['document'] == null
+        ? null
+        : Document.fromJson(json['document'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$RequestBodyToJson(RequestBody instance) =>
     <String, dynamic>{
@@ -65,6 +67,7 @@ Map<String, dynamic> _$RequestBodyToJson(RequestBody instance) =>
       'messagingProduct': instance.messagingProduct,
       'type': instance.type,
       'image': instance.image,
+      'document': instance.document,
     };
 
 Template _$TemplateFromJson(Map<String, dynamic> json) => Template(
@@ -113,4 +116,16 @@ Image _$ImageFromJson(Map<String, dynamic> json) => Image(
 
 Map<String, dynamic> _$ImageToJson(Image instance) => <String, dynamic>{
       'link': instance.link,
+    };
+
+Document _$DocumentFromJson(Map<String, dynamic> json) => Document(
+      link: json['link'] as String?,
+      filename: json['filename'] as String?,
+      caption: json['caption'] as String?,
+    );
+
+Map<String, dynamic> _$DocumentToJson(Document instance) => <String, dynamic>{
+      'link': instance.link,
+      'filename': instance.filename,
+      'caption': instance.caption,
     };
