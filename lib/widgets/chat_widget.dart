@@ -148,7 +148,8 @@ class _ChatWidgetState extends State<ChatWidget> {
         if (mimeType == null) {
           throw "File type unknown or unsupported";
         }
-        await _storeFileAndSend(result.files.single.bytes!, false, mimeType);
+        final fileName = result.files.single.name;
+        await _storeFileAndSend(result.files.single.bytes!, false, mimeType, fileName);
       } catch (e, s) {
         toast(e.toString());
         debugPrintStack(stackTrace: s);
@@ -182,7 +183,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   }
 
   Future<void> _storeFileAndSend(
-      Uint8List bytes, bool isImage, String mimeType) async {
+      Uint8List bytes, bool isImage, String mimeType, [String? fileName]) async {
     debugPrint("Storing file with mime type $mimeType");
     final id = uuid.v4();
     final reference = FirebaseStorage.instance.ref(id);
@@ -248,6 +249,7 @@ class _ChatWidgetState extends State<ChatWidget> {
       msgRequest.imageUrl = uri;
     } else {
       msgRequest.documentUrl = uri;
+      msgRequest.filename = fileName;
     }
 
     await (await BotServerApiClient.getClient()).sendMessage(

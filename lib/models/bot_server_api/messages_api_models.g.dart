@@ -13,6 +13,8 @@ SendMessageRequest _$SendMessageRequestFromJson(Map<String, dynamic> json) =>
       msg: json['msg'] as String?,
       documentUrl: json['documentUrl'] as String?,
       imageUrl: json['imageUrl'] as String?,
+      caption: json['caption'] as String?,
+      filename: json['filename'] as String?,
     );
 
 Map<String, dynamic> _$SendMessageRequestToJson(SendMessageRequest instance) =>
@@ -22,6 +24,8 @@ Map<String, dynamic> _$SendMessageRequestToJson(SendMessageRequest instance) =>
       'msg': instance.msg,
       'documentUrl': instance.documentUrl,
       'imageUrl': instance.imageUrl,
+      'caption': instance.caption,
+      'filename': instance.filename,
     };
 
 SendMessageResponse _$SendMessageResponseFromJson(Map<String, dynamic> json) =>

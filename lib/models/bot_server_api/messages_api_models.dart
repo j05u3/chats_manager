@@ -10,12 +10,17 @@ class SendMessageRequest {
   String? documentUrl;
   String? imageUrl;
 
+  String? caption;
+  String? filename;
+
   SendMessageRequest(
       {required this.from,
       required this.to,
       this.msg,
       this.documentUrl,
-      this.imageUrl});
+      this.imageUrl,
+      this.caption,
+      this.filename});
 
   factory SendMessageRequest.fromJson(Map<String, dynamic> json) =>
       _$SendMessageRequestFromJson(json);
