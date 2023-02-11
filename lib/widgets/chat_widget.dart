@@ -194,8 +194,19 @@ class _ChatWidgetState extends State<ChatWidget> {
         throw "Unsupported image type";
       }
     } else {
-      // TODO: validate document mime types
-      throw "Not implemented yet";
+      final supportedDocumentMimeTypes = [
+        "text/plain",
+        "application/pdf",
+        "application/vnd.ms-powerpoint",
+        "application/msword",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ];
+      if (!supportedDocumentMimeTypes.contains(mimeType)) {
+        throw "Unsupported document type";
+      }
     }
 
     if (kIsWeb) {
