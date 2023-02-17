@@ -26,6 +26,19 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
 
   final author = User(firstName: senderName, id: senderId);
 
+  final status = isIncoming
+      ? null
+      // Note: order matters in the evaluation
+      : (message.outgoingMessage?.lastStatus_failed != null
+          ? Status.error
+          : (message.outgoingMessage?.lastStatus_read != null
+              ? Status.seen
+              : (message.outgoingMessage?.lastStatus_delivered != null
+                  ? Status.delivered
+                  : (message.outgoingMessage?.lastStatus_sent != null
+                      ? Status.sent
+                      : Status.sending))));
+
   // template sent
   if (message.outgoingMessage?.requestBody?.template != null) {
     final template = message.outgoingMessage!.requestBody!.template!;
@@ -72,6 +85,7 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
           name: text,
           size: 0,
         ),
+        status: status,
       );
     }
 
@@ -82,6 +96,7 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
       partialText: PartialText(
         text: text,
       ),
+      status: status,
     );
   }
 
@@ -98,6 +113,7 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
         name: "",
         size: 0,
       ),
+      status: status,
     );
   }
 
@@ -116,6 +132,7 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
       partialText: PartialText(
         text: "File: $filename\nLink: $docLink",
       ),
+      status: status,
     );
   }
 
@@ -134,6 +151,7 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
           name: "",
           size: 0,
         ),
+        status: status,
       );
     }
 
@@ -144,6 +162,7 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
       partialText: PartialText(
         text: "$mime_type\n$media_url",
       ),
+      status: status,
     );
   }
 
@@ -166,6 +185,7 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
                     message.outgoingMessage!.requestBody!.location!)
                 : null) ??
             "")),
+    status: status,
   );
 }
 

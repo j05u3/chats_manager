@@ -32,6 +32,90 @@ Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
       'longitude': instance.longitude,
     };
 
+ErrorData _$ErrorDataFromJson(Map<String, dynamic> json) => ErrorData(
+      details: json['details'] as String?,
+    );
+
+Map<String, dynamic> _$ErrorDataToJson(ErrorData instance) => <String, dynamic>{
+      'details': instance.details,
+    };
+
+StatusError _$StatusErrorFromJson(Map<String, dynamic> json) => StatusError(
+      code: json['code'] as int?,
+      title: json['title'] as String?,
+      error_data: json['error_data'] == null
+          ? null
+          : ErrorData.fromJson(json['error_data'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$StatusErrorToJson(StatusError instance) =>
+    <String, dynamic>{
+      'code': instance.code,
+      'title': instance.title,
+      'error_data': instance.error_data,
+    };
+
+StatusReceived _$StatusReceivedFromJson(Map<String, dynamic> json) =>
+    StatusReceived(
+      timestamp: json['timestamp'] as String?,
+      status: json['status'] as String?,
+      recipient_id: json['recipient_id'] as String?,
+      id: json['id'] as String?,
+      errors: (json['errors'] as List<dynamic>?)
+          ?.map((e) => StatusError.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$StatusReceivedToJson(StatusReceived instance) =>
+    <String, dynamic>{
+      'timestamp': instance.timestamp,
+      'status': instance.status,
+      'recipient_id': instance.recipient_id,
+      'id': instance.id,
+      'errors': instance.errors,
+    };
+
+OutgoingMessage _$OutgoingMessageFromJson(Map<String, dynamic> json) =>
+    OutgoingMessage(
+      requestBody: json['requestBody'] == null
+          ? null
+          : RequestBody.fromJson(json['requestBody'] as Map<String, dynamic>),
+      t: json['t'] as int?,
+      fromPhoneNumberId: json['fromPhoneNumberId'] as String?,
+      responseSummary: json['responseSummary'] == null
+          ? null
+          : ResponseSummary.fromJson(
+              json['responseSummary'] as Map<String, dynamic>),
+      lastStatus_failed: json['lastStatus_failed'] == null
+          ? null
+          : StatusReceived.fromJson(
+              json['lastStatus_failed'] as Map<String, dynamic>),
+    )
+      ..lastStatus_sent = json['lastStatus_sent'] == null
+          ? null
+          : StatusReceived.fromJson(
+              json['lastStatus_sent'] as Map<String, dynamic>)
+      ..lastStatus_delivered = json['lastStatus_delivered'] == null
+          ? null
+          : StatusReceived.fromJson(
+              json['lastStatus_delivered'] as Map<String, dynamic>)
+      ..lastStatus_read = json['lastStatus_read'] == null
+          ? null
+          : StatusReceived.fromJson(
+              json['lastStatus_read'] as Map<String, dynamic>);
+
+Map<String, dynamic> _$OutgoingMessageToJson(OutgoingMessage instance) =>
+    <String, dynamic>{
+      'requestBody': instance.requestBody,
+      't': instance.t,
+      'fromPhoneNumberId': instance.fromPhoneNumberId,
+      'responseSummary': instance.responseSummary,
+      'lastStatus_sent': instance.lastStatus_sent,
+      'lastStatus_delivered': instance.lastStatus_delivered,
+      'lastStatus_read': instance.lastStatus_read,
+      'lastStatus_failed': instance.lastStatus_failed,
+    };
+
 RequestBody _$RequestBodyFromJson(Map<String, dynamic> json) => RequestBody(
       to: json['to'] as String?,
       text: json['text'] == null

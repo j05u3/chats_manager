@@ -100,38 +100,71 @@ class Context {
   }
 }
 
+@JsonSerializable()
+class ErrorData {
+  String? details;
+
+  ErrorData({this.details});
+
+  factory ErrorData.fromJson(Map<String, dynamic> json) =>
+      _$ErrorDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ErrorDataToJson(this);
+}
+
+@JsonSerializable()
+class StatusError {
+  int? code;
+  String? title;
+  ErrorData? error_data;
+
+  StatusError({this.code, this.title, this.error_data});
+
+  factory StatusError.fromJson(Map<String, dynamic> json) =>
+      _$StatusErrorFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StatusErrorToJson(this);
+}
+
+@JsonSerializable()
+class StatusReceived {
+  String? timestamp;
+  String? status;
+  String? recipient_id;
+  String? id;
+  List<StatusError>? errors;
+
+  StatusReceived(
+      {this.timestamp, this.status, this.recipient_id, this.id, this.errors});
+
+  factory StatusReceived.fromJson(Map<String, dynamic> json) =>
+      _$StatusReceivedFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StatusReceivedToJson(this);
+}
+
+@JsonSerializable()
 class OutgoingMessage {
   RequestBody? requestBody;
   int? t;
   String? fromPhoneNumberId;
   ResponseSummary? responseSummary;
+  StatusReceived? lastStatus_sent;
+  StatusReceived? lastStatus_delivered;
+  StatusReceived? lastStatus_read;
+  StatusReceived? lastStatus_failed;
 
   OutgoingMessage(
-      {this.requestBody, this.t, this.fromPhoneNumberId, this.responseSummary});
+      {this.requestBody,
+      this.t,
+      this.fromPhoneNumberId,
+      this.responseSummary,
+      this.lastStatus_failed});
 
-  OutgoingMessage.fromJson(Map<String, dynamic> json) {
-    requestBody = json['requestBody'] != null
-        ? new RequestBody.fromJson(json['requestBody'])
-        : null;
-    t = json['t'];
-    fromPhoneNumberId = json['fromPhoneNumberId'];
-    responseSummary = json['responseSummary'] != null
-        ? new ResponseSummary.fromJson(json['responseSummary'])
-        : null;
-  }
+  factory OutgoingMessage.fromJson(Map<String, dynamic> json) =>
+      _$OutgoingMessageFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.requestBody != null) {
-      data['requestBody'] = this.requestBody!.toJson();
-    }
-    data['t'] = this.t;
-    data['fromPhoneNumberId'] = this.fromPhoneNumberId;
-    if (responseSummary != null) {
-      data['responseSummary'] = this.responseSummary!.toJson();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => _$OutgoingMessageToJson(this);
 }
 
 @JsonSerializable()
