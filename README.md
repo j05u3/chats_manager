@@ -4,15 +4,16 @@ Display and manage your [Whatsapp Cloud API](https://developers.facebook.com/doc
 
 ## What works so far:
 
-* Display the text messages stored on Firestore using [these functions](https://gist.github.com/j05u3/b3ad1d5d9106a918941587e03c1919b1) for bots built using [@josue.0/whatsapp-cloud-api](https://www.npmjs.com/package/@josue.0/whatsapp-cloud-api) (version 0.2.7-alpha-01)
+* Display the text messages stored on Firestore using [these functions](https://gist.github.com/j05u3/b3ad1d5d9106a918941587e03c1919b1) for bots built using [@josue.0/whatsapp-cloud-api](https://www.npmjs.com/package/@josue.0/whatsapp-cloud-api) (version 0.2.7-alpha-04)
+* Display the message statuses.
+* Firebase authentication with Google.
+* Basic templates display support through the `private_constants.dart` file.
 * Only works on web for now (not mobile or other platforms).
 
 ## Roadmap:
 
-* Add support for showing templates or other types of messages.
-* Be able to send messages to a specific contact.
+* Be able to send messages to a new phone number.
 * Be able to pause the bot or stop it.
-* Firebase authentication.
 
 ## Development and deployment setup:
 
