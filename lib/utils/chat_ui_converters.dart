@@ -166,6 +166,29 @@ Message convertMessageToChatMessage(msgTypes.Message message) {
     );
   }
 
+  // contacts received
+  if (message.incomingMessage?.contacts != null) {
+    final contacts = message.incomingMessage!.contacts!;
+
+    return TextMessage.fromPartial(
+      createdAt: message.t,
+      author: author,
+      id: message.id,
+      partialText: PartialText(
+        text: "[Contacts]\n\n${contacts.map((e) {
+          final name = e.name?.formatted_name ?? "";
+          final numbers = e.phones
+                  ?.map((p) => "Type: ${p.type ?? ""}\nNumber: ${p.phone ?? ""}")
+                  .toList()
+                  .join("\n\n") ??
+              "";
+          return "Name: $name\n\n$numbers";
+        }).join("\n\n==========\n\n")}",
+      ),
+      status: status,
+    );
+  }
+
   return TextMessage.fromPartial(
     createdAt: message.t,
     author: author,

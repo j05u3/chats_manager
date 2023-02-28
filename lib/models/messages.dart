@@ -9,6 +9,7 @@ class IncomingMessage {
   String? from;
   String? id;
   Data? data;
+  List<Contact>? contacts;
   String? name;
   String? timestamp;
 
@@ -28,7 +29,13 @@ class IncomingMessage {
     type = json['type'];
     from = json['from'];
     id = json['id'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    final d = json['data'];
+    // check if data is list (in case of the contacts type)
+    if (d is List) {
+      contacts = d.map((e) => Contact.fromJson(e)).toList();
+    } else {
+      data = d != null ? new Data.fromJson(d) : null;
+    }
     name = json['name'];
     timestamp = json['timestamp'];
   }
@@ -47,6 +54,45 @@ class IncomingMessage {
     data['timestamp'] = this.timestamp;
     return data;
   }
+}
+
+
+@JsonSerializable()
+class Contact {
+  Name? name;
+  List<Phone>? phones;
+
+  Contact({this.name, this.phones});
+
+  factory Contact.fromJson(Map<String, dynamic> json) => _$ContactFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ContactToJson(this);
+}
+
+@JsonSerializable()
+class Name {
+  String? first_name;
+  String? formatted_name;
+
+  Name({this.first_name, this.formatted_name});
+
+  factory Name.fromJson(Map<String, dynamic> json) => _$NameFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NameToJson(this);
+}
+
+
+@JsonSerializable()
+class Phone {
+  String? phone;
+  String? type;
+  String? wa_id;
+
+  Phone({this.phone, this.type, this.wa_id});
+
+  factory Phone.fromJson(Map<String, dynamic> json) => _$PhoneFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PhoneToJson(this);
 }
 
 @JsonSerializable()
@@ -159,6 +205,9 @@ class OutgoingMessage {
       this.t,
       this.fromPhoneNumberId,
       this.responseSummary,
+      this.lastStatus_sent,
+      this.lastStatus_delivered,
+      this.lastStatus_read,
       this.lastStatus_failed});
 
   factory OutgoingMessage.fromJson(Map<String, dynamic> json) =>

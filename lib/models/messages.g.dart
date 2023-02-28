@@ -6,6 +6,42 @@ part of 'messages.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+Contact _$ContactFromJson(Map<String, dynamic> json) => Contact(
+      name: json['name'] == null
+          ? null
+          : Name.fromJson(json['name'] as Map<String, dynamic>),
+      phones: (json['phones'] as List<dynamic>?)
+          ?.map((e) => Phone.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$ContactToJson(Contact instance) => <String, dynamic>{
+      'name': instance.name,
+      'phones': instance.phones,
+    };
+
+Name _$NameFromJson(Map<String, dynamic> json) => Name(
+      first_name: json['first_name'] as String?,
+      formatted_name: json['formatted_name'] as String?,
+    );
+
+Map<String, dynamic> _$NameToJson(Name instance) => <String, dynamic>{
+      'first_name': instance.first_name,
+      'formatted_name': instance.formatted_name,
+    };
+
+Phone _$PhoneFromJson(Map<String, dynamic> json) => Phone(
+      phone: json['phone'] as String?,
+      type: json['type'] as String?,
+      wa_id: json['wa_id'] as String?,
+    );
+
+Map<String, dynamic> _$PhoneToJson(Phone instance) => <String, dynamic>{
+      'phone': instance.phone,
+      'type': instance.type,
+      'wa_id': instance.wa_id,
+    };
+
 Data _$DataFromJson(Map<String, dynamic> json) => Data(
       text: json['text'] as String?,
       context: json['context'] == null
@@ -86,23 +122,23 @@ OutgoingMessage _$OutgoingMessageFromJson(Map<String, dynamic> json) =>
           ? null
           : ResponseSummary.fromJson(
               json['responseSummary'] as Map<String, dynamic>),
+      lastStatus_sent: json['lastStatus_sent'] == null
+          ? null
+          : StatusReceived.fromJson(
+              json['lastStatus_sent'] as Map<String, dynamic>),
+      lastStatus_delivered: json['lastStatus_delivered'] == null
+          ? null
+          : StatusReceived.fromJson(
+              json['lastStatus_delivered'] as Map<String, dynamic>),
+      lastStatus_read: json['lastStatus_read'] == null
+          ? null
+          : StatusReceived.fromJson(
+              json['lastStatus_read'] as Map<String, dynamic>),
       lastStatus_failed: json['lastStatus_failed'] == null
           ? null
           : StatusReceived.fromJson(
               json['lastStatus_failed'] as Map<String, dynamic>),
-    )
-      ..lastStatus_sent = json['lastStatus_sent'] == null
-          ? null
-          : StatusReceived.fromJson(
-              json['lastStatus_sent'] as Map<String, dynamic>)
-      ..lastStatus_delivered = json['lastStatus_delivered'] == null
-          ? null
-          : StatusReceived.fromJson(
-              json['lastStatus_delivered'] as Map<String, dynamic>)
-      ..lastStatus_read = json['lastStatus_read'] == null
-          ? null
-          : StatusReceived.fromJson(
-              json['lastStatus_read'] as Map<String, dynamic>);
+    );
 
 Map<String, dynamic> _$OutgoingMessageToJson(OutgoingMessage instance) =>
     <String, dynamic>{

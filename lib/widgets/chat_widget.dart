@@ -35,8 +35,17 @@ class _ChatWidgetState extends State<ChatWidget> {
   @override
   Widget build(BuildContext context) => StreamBuilder<List<msgTypes.Message>>(
       initialData: const [],
-      stream: MessagingBackend.instance.messages(widget.user.id),
+      stream: MessagingBackend.instance.messages(widget.user.id)
+      // .handleError((error, st) {  // just to see the stack trace in case of errors
+      //   debugPrintStack(stackTrace: st);
+      // }, test: (e) => true)
+      ,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(snapshot.error.toString()),
+          );
+        }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
