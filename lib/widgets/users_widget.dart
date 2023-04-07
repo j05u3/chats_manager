@@ -28,6 +28,11 @@ class _UsersWidgetState extends State<UsersWidget> {
         stream: _stream,
         initialData: const [],
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
