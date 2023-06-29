@@ -12,10 +12,7 @@ class _BotServerApiClient implements BotServerApiClient {
   _BotServerApiClient(
     this._dio, {
     this.baseUrl,
-  }) {
-    baseUrl ??=
-        'https://us-central1-kambia-app.cloudfunctions.net/endpoints_01';
-  }
+  });
 
   final Dio _dio;
 

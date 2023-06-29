@@ -9,7 +9,7 @@ import 'package:dio/dio.dart';
 
 part 'bot_server_api.g.dart';
 
-@RestApi(baseUrl: api_bot_server_base_url)
+@RestApi()
 abstract class BotServerApiClient {
   static Future<BotServerApiClient> getClient() async {
     final dio = Dio(); // Provide a dio instance
@@ -28,7 +28,7 @@ abstract class BotServerApiClient {
           maxWidth: 90));
     }
 
-    return _BotServerApiClient(dio);
+    return _BotServerApiClient(dio, baseUrl: api_bot_server_base_url);
   }
 
   @POST("/api/v1/po/send_text_msg")
