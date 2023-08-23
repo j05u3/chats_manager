@@ -2,14 +2,13 @@
 
 Display and manage your [Whatsapp Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api/) chats.
 
-![image](https://github.com/j05u3/chats_manager/assets/7897132/9f7a0523-b628-447a-9bbb-64700cfefabf)
-
-
+![image](https://github.com/j05u3/chats_manager/assets/7897132/038c2716-c790-49c5-8cc9-b0617c8fc5dc)
 
 ## What works so far:
 
 * Display the text messages stored on Firestore using [these functions](https://gist.github.com/j05u3/b3ad1d5d9106a918941587e03c1919b1) for bots built using [whatsapp-cloud-api-express](https://github.com/j05u3/whatsapp-cloud-api-express) or [@josue.0/whatsapp-cloud-api](https://www.npmjs.com/package/@josue.0/whatsapp-cloud-api) (version 0.2.7-alpha-04)
 * Display the message statuses (delivered, read, failed).
+* Display image messages.
 * Firebase authentication with Google.
 * Basic templates display support through the `private_constants.dart` file.
 * Only works on web (desktop and mobile), not native apps for the time being.
