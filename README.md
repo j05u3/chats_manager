@@ -8,7 +8,7 @@ Display and manage your [Whatsapp Cloud API](https://developers.facebook.com/doc
 * Display the message statuses.
 * Firebase authentication with Google.
 * Basic templates display support through the `private_constants.dart` file.
-* Only works on web for now (not mobile or other platforms).
+* Only works on web (desktop and mobile), not native apps for the time being.
 
 ## Roadmap:
 
