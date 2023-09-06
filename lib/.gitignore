@@ -1,3 +1,4 @@
+firebase_options.*.dart
 firebase_options.dart
 private_constants.*.dart
 private_constants.dart
