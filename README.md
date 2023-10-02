@@ -6,7 +6,7 @@ Display and answer your [Whatsapp Cloud API](https://developers.facebook.com/doc
 
 ## What works so far:
 
-* Display the text messages stored on Firestore using [these functions](https://gist.github.com/j05u3/b3ad1d5d9106a918941587e03c1919b1) for bots built using [whatsapp-cloud-api-express](https://github.com/j05u3/whatsapp-cloud-api-express) or [@josue.0/whatsapp-cloud-api](https://www.npmjs.com/package/@josue.0/whatsapp-cloud-api) (version 0.2.7-alpha-04)
+* Display the text messages stored on Firestore using [these functions](https://gist.github.com/j05u3/b3ad1d5d9106a918941587e03c1919b1) for bots built using [whatsapp-cloud-api-express](https://github.com/j05u3/whatsapp-cloud-api-express)
 * Display the message statuses (delivered, read, failed).
 * Display image messages.
 * Answer messages / send template messages (you need to implement your own backend endpoint for this to work).
