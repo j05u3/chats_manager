@@ -1,7 +1,5 @@
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
-
 import 'package:flutter/cupertino.dart';
+import 'package:web/web.dart' as web;
 
 // credits to: https://medium.com/flutter-community/more-than-a-flutter-web-app-is-a-full-flutter-website-c6bb210b1f16
 
@@ -17,18 +15,32 @@ class WebPlatform {
 
   static bool isIOS() {
     var matches = false;
+    final navigator = web.window.navigator;
+    final platform = _getPlatform(navigator);
+    final userAgent = navigator.userAgent;
     for (var name in _iOS) {
-      if ((html.window.navigator.platform ?? "").contains(name) ||
-          html.window.navigator.userAgent.contains(name)) {
+      if (platform.contains(name) || userAgent.contains(name)) {
         matches = true;
       }
     }
     return matches;
   }
 
-  static bool isAndroid() =>
-      html.window.navigator.platform == "Android" ||
-      html.window.navigator.userAgent.contains("Android");
+  static String _getPlatform(web.Navigator navigator) {
+    // navigator.platform is deprecated, but still useful for detection
+    // Using a try-catch in case it's not available
+    try {
+      return (navigator as dynamic).platform ?? "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  static bool isAndroid() {
+    final navigator = web.window.navigator;
+    final platform = _getPlatform(navigator);
+    return platform == "Android" || navigator.userAgent.contains("Android");
+  }
 
   static bool isMobile() => isAndroid() || isIOS();
   static bool isDesktop() => !isMobile();
