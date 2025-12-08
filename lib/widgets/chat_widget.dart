@@ -1,13 +1,13 @@
 import 'package:chats_manager/api/bot_server_api.dart';
 import 'package:chats_manager/firestore/messaging_backend.dart';
 import 'package:chats_manager/models/bot_server_api/messages_api_models.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:chats_manager/models/messages.dart' as msgTypes;
 
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:image_picker/image_picker.dart';
@@ -31,56 +31,98 @@ class ChatWidget extends StatefulWidget {
 
 class _ChatWidgetState extends State<ChatWidget> {
   bool _isAttachmentUploading = false;
+  final List<types.Message> _messages = [];
+  bool _isLoadingMore = false;
+  bool _hasMoreMessages = true;
+  DocumentSnapshot? _lastIncomingDoc;
+  DocumentSnapshot? _lastOutgoingDoc;
+  static const int _messagesPerPage = 20;
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<List<msgTypes.Message>>(
-      initialData: const [],
-      stream: MessagingBackend.instance.messages(widget.user.id)
-      // .handleError((error, st) {  // just to see the stack trace in case of errors
-      //   debugPrintStack(stackTrace: st);
-      // }, test: (e) => true)
-      ,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(snapshot.error.toString()),
-          );
-        }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return Chat(
-          messages: (snapshot.data ?? [])
-              .where((message) {
-                final botPhoneNumberId =
-                    message.incomingMessage?.toPhoneNumberId ??
-                        message.outgoingMessage?.fromPhoneNumberId;
-                return botPhoneNumberId == widget.botId;
-              })
-              .map((e) => convertMessageToChatMessage(e))
-              .toList(),
-          onAttachmentPressed: _handleAttachmentPressed,
-          isAttachmentUploading: _isAttachmentUploading,
-          onMessageTap: _handleMessageTap,
-          onSendPressed: _handleSendPressed,
-          showUserAvatars: true,
-          showUserNames: true,
-          user: types.User(
-            id: widget.botId,
-          ),
-          imageMessageBuilder: (message, {required messageWidth}) {
-            return Column(
-              children: [
-                ImageMessage(
-                  message: message,
-                  messageWidth: messageWidth,
-                ),
-                if (message.name.isNotEmpty) Text(message.name),
-              ],
-            );
-          },
-        );
+  void initState() {
+    super.initState();
+    _loadInitialMessages();
+  }
+
+  Future<void> _loadInitialMessages() async {
+    await _loadMoreMessages();
+  }
+
+  Future<void> _loadMoreMessages() async {
+    if (_isLoadingMore || !_hasMoreMessages) return;
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    try {
+      final result = await MessagingBackend.instance.messagesPaginated(
+        widget.user.id,
+        limit: _messagesPerPage,
+        lastIncomingDoc: _lastIncomingDoc,
+        lastOutgoingDoc: _lastOutgoingDoc,
+      );
+
+      final newMessages = result.$1
+          .where((message) {
+            final botPhoneNumberId =
+                message.incomingMessage?.toPhoneNumberId ??
+                    message.outgoingMessage?.fromPhoneNumberId;
+            return botPhoneNumberId == widget.botId;
+          })
+          .map((e) => convertMessageToChatMessage(e))
+          .toList();
+
+      setState(() {
+        _messages.addAll(newMessages);
+        _lastIncomingDoc = result.$2;
+        _lastOutgoingDoc = result.$3;
+        _hasMoreMessages = newMessages.isNotEmpty;
+        _isLoadingMore = false;
       });
+    } catch (e) {
+      setState(() {
+        _isLoadingMore = false;
+      });
+      debugPrint('Error loading messages: $e');
+    }
+  }
+
+  Future<void> _handleEndReached() async {
+    await _loadMoreMessages();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_messages.isEmpty && !_isLoadingMore) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return Chat(
+      messages: _messages,
+      onAttachmentPressed: _handleAttachmentPressed,
+      isAttachmentUploading: _isAttachmentUploading,
+      onMessageTap: _handleMessageTap,
+      onSendPressed: _handleSendPressed,
+      onEndReached: _handleEndReached,
+      showUserAvatars: true,
+      showUserNames: true,
+      user: types.User(
+        id: widget.botId,
+      ),
+      imageMessageBuilder: (message, {required messageWidth}) {
+        return Column(
+          children: [
+            ImageMessage(
+              message: message,
+              messageWidth: messageWidth,
+            ),
+            if (message.name.isNotEmpty) Text(message.name),
+          ],
+        );
+      },
+    );
+  }
 
   void _handleSendPressed(types.PartialText message) async {
     await (await BotServerApiClient.getClient()).sendMessage(

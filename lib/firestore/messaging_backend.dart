@@ -99,9 +99,113 @@ class MessagingBackend {
           id: e.responseSummary!.messageId!, t: e.t!, outgoingMessage: e)));
 
       // sort by timestamp in descending order
-      messages.sort((a, b) => b.t!.compareTo(a.t!));
+      messages.sort((a, b) => b.t.compareTo(a.t));
 
       return messages;
     });
+  }
+
+  /// Fetches paginated incoming messages for a user
+  Future<List<IncomingMessage>> incomingMessagesPaginated(
+    String userId, {
+    int limit = 20,
+    DocumentSnapshot? lastDocument,
+  }) async {
+    Query query = incomingMessagesCollection
+        .where("from", isEqualTo: userId)
+        .orderBy("t", descending: true)
+        .limit(limit);
+
+    if (lastDocument != null) {
+      query = query.startAfterDocument(lastDocument);
+    }
+
+    final snapshot = await query.get();
+    return snapshot.docs
+        .map((doc) =>
+            IncomingMessage.fromJson(doc.data() as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Fetches paginated outgoing messages for a user
+  Future<List<OutgoingMessage>> outgoingMessagesPaginated(
+    String userId, {
+    int limit = 20,
+    DocumentSnapshot? lastDocument,
+  }) async {
+    Query query = outgoingMessagesCollection
+        .where("responseSummary.phoneNumber", isEqualTo: userId)
+        .orderBy("t", descending: true)
+        .limit(limit);
+
+    if (lastDocument != null) {
+      query = query.startAfterDocument(lastDocument);
+    }
+
+    final snapshot = await query.get();
+    return snapshot.docs
+        .map((doc) =>
+            OutgoingMessage.fromJson(doc.data() as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Fetches paginated messages (both incoming and outgoing) for a user
+  Future<(List<Message>, DocumentSnapshot?, DocumentSnapshot?)> messagesPaginated(
+    String userId, {
+    int limit = 20,
+    DocumentSnapshot? lastIncomingDoc,
+    DocumentSnapshot? lastOutgoingDoc,
+  }) async {
+    // Fetch both incoming and outgoing messages in parallel
+    Query incomingQuery = incomingMessagesCollection
+        .where("from", isEqualTo: userId)
+        .orderBy("t", descending: true)
+        .limit(limit);
+
+    Query outgoingQuery = outgoingMessagesCollection
+        .where("responseSummary.phoneNumber", isEqualTo: userId)
+        .orderBy("t", descending: true)
+        .limit(limit);
+
+    if (lastIncomingDoc != null) {
+      incomingQuery = incomingQuery.startAfterDocument(lastIncomingDoc);
+    }
+
+    if (lastOutgoingDoc != null) {
+      outgoingQuery = outgoingQuery.startAfterDocument(lastOutgoingDoc);
+    }
+
+    final results = await Future.wait([
+      incomingQuery.get(),
+      outgoingQuery.get(),
+    ]);
+
+    final incomingSnapshot = results[0];
+    final outgoingSnapshot = results[1];
+
+    final messages = <Message>[];
+    
+    messages.addAll(incomingSnapshot.docs.map((doc) {
+      final incoming =
+          IncomingMessage.fromJson(doc.data() as Map<String, dynamic>);
+      return Message(id: incoming.id!, t: incoming.t!, incomingMessage: incoming);
+    }));
+
+    messages.addAll(outgoingSnapshot.docs.map((doc) {
+      final outgoing =
+          OutgoingMessage.fromJson(doc.data() as Map<String, dynamic>);
+      return Message(
+          id: outgoing.responseSummary!.messageId!,
+          t: outgoing.t!,
+          outgoingMessage: outgoing);
+    }));
+
+    // sort by timestamp in descending order
+    messages.sort((a, b) => b.t.compareTo(a.t));
+
+    // Return the last documents for pagination
+    return (messages, 
+        incomingSnapshot.docs.isNotEmpty ? incomingSnapshot.docs.last : lastIncomingDoc,
+        outgoingSnapshot.docs.isNotEmpty ? outgoingSnapshot.docs.last : lastOutgoingDoc);
   }
 }
