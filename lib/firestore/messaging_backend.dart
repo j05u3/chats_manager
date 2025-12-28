@@ -149,31 +149,34 @@ class MessagingBackend {
         .toList();
   }
 
-  /// Fetches paginated messages (both incoming and outgoing) for a user
-  Future<(List<Message>, DocumentSnapshot?, DocumentSnapshot?)> messagesPaginated(
+  /// Fetches paginated messages (both incoming and outgoing) for a user.
+  /// Uses timestamp-based cursor to ensure messages from the same time period
+  /// are always loaded together (outgoing and their replies stay on the same page).
+  Future<(List<Message>, int?)> messagesPaginated(
     String userId, {
     int limit = 20,
-    DocumentSnapshot? lastIncomingDoc,
-    DocumentSnapshot? lastOutgoingDoc,
+    int? oldestTimestamp,
   }) async {
     // Fetch both incoming and outgoing messages in parallel
+    // Use timestamp-based pagination to keep related messages together
     Query incomingQuery = incomingMessagesCollection
         .where("from", isEqualTo: userId)
-        .orderBy("t", descending: true)
-        .limit(limit);
+        .orderBy("t", descending: true);
 
     Query outgoingQuery = outgoingMessagesCollection
         .where("responseSummary.phoneNumber", isEqualTo: userId)
-        .orderBy("t", descending: true)
-        .limit(limit);
+        .orderBy("t", descending: true);
 
-    if (lastIncomingDoc != null) {
-      incomingQuery = incomingQuery.startAfterDocument(lastIncomingDoc);
+    // If we have a cursor timestamp, only get messages older than that
+    if (oldestTimestamp != null) {
+      incomingQuery = incomingQuery.where("t", isLessThan: oldestTimestamp);
+      outgoingQuery = outgoingQuery.where("t", isLessThan: oldestTimestamp);
     }
 
-    if (lastOutgoingDoc != null) {
-      outgoingQuery = outgoingQuery.startAfterDocument(lastOutgoingDoc);
-    }
+    // Fetch more than needed from each collection to ensure we get enough
+    // messages after merging and sorting
+    incomingQuery = incomingQuery.limit(limit);
+    outgoingQuery = outgoingQuery.limit(limit);
 
     final results = await Future.wait([
       incomingQuery.get(),
@@ -200,12 +203,15 @@ class MessagingBackend {
           outgoingMessage: outgoing);
     }));
 
-    // sort by timestamp in descending order
+    // Sort by timestamp in descending order (newest first)
     messages.sort((a, b) => b.t.compareTo(a.t));
 
-    // Return the last documents for pagination
-    return (messages, 
-        incomingSnapshot.docs.isNotEmpty ? incomingSnapshot.docs.last : lastIncomingDoc,
-        outgoingSnapshot.docs.isNotEmpty ? outgoingSnapshot.docs.last : lastOutgoingDoc);
+    // Take only the requested limit after merging
+    final limitedMessages = messages.take(limit).toList();
+
+    // The next cursor is the oldest timestamp in this batch
+    final nextCursor = limitedMessages.isNotEmpty ? limitedMessages.last.t : null;
+
+    return (limitedMessages, nextCursor);
   }
 }

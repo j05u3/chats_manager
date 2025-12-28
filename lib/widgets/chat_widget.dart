@@ -1,7 +1,6 @@
 import 'package:chats_manager/api/bot_server_api.dart';
 import 'package:chats_manager/firestore/messaging_backend.dart';
 import 'package:chats_manager/models/bot_server_api/messages_api_models.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -34,8 +33,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   final List<types.Message> _messages = [];
   bool _isLoadingMore = false;
   bool _hasMoreMessages = true;
-  DocumentSnapshot? _lastIncomingDoc;
-  DocumentSnapshot? _lastOutgoingDoc;
+  int? _oldestTimestamp;
   static const int _messagesPerPage = 20;
 
   @override
@@ -59,8 +57,7 @@ class _ChatWidgetState extends State<ChatWidget> {
       final result = await MessagingBackend.instance.messagesPaginated(
         widget.user.id,
         limit: _messagesPerPage,
-        lastIncomingDoc: _lastIncomingDoc,
-        lastOutgoingDoc: _lastOutgoingDoc,
+        oldestTimestamp: _oldestTimestamp,
       );
 
       final newMessages = result.$1
@@ -75,8 +72,7 @@ class _ChatWidgetState extends State<ChatWidget> {
 
       setState(() {
         _messages.addAll(newMessages);
-        _lastIncomingDoc = result.$2;
-        _lastOutgoingDoc = result.$3;
+        _oldestTimestamp = result.$2;
         _hasMoreMessages = newMessages.isNotEmpty;
         _isLoadingMore = false;
       });
@@ -92,13 +88,24 @@ class _ChatWidgetState extends State<ChatWidget> {
     await _loadMoreMessages();
   }
 
+  /// Refreshes the first page of messages to show newly sent messages
+  Future<void> _refreshMessages() async {
+    setState(() {
+      _messages.clear();
+      _oldestTimestamp = null;
+      _hasMoreMessages = true;
+    });
+    await _loadMoreMessages();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_messages.isEmpty && !_isLoadingMore) {
+    if (_messages.isEmpty && _isLoadingMore) {
       return const Center(child: CircularProgressIndicator());
     }
 
     return Chat(
+      key: ValueKey('chat_${widget.botId}_${widget.user.id}'),
       messages: _messages,
       onAttachmentPressed: _handleAttachmentPressed,
       isAttachmentUploading: _isAttachmentUploading,
@@ -132,6 +139,8 @@ class _ChatWidgetState extends State<ChatWidget> {
         msg: message.text,
       ),
     );
+    // Refresh messages to show the newly sent message
+    await _refreshMessages();
   }
 
   void _handleMessageTap(BuildContext context, types.Message p1) {
@@ -306,6 +315,8 @@ class _ChatWidgetState extends State<ChatWidget> {
     await (await BotServerApiClient.getClient()).sendMessage(
       msgRequest,
     );
+    // Refresh messages to show the newly sent attachment
+    await _refreshMessages();
   }
 
   void _setAttachmentUploading(bool uploading) {
